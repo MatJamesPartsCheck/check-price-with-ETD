@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PartsCheck – Check Price</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #7DC21E;
+    --green-dark: #5cb85c;
+    --green-btn: #5cb85c;
+    --blue: #337ab7;
+    --purple: #9b59b6;
+    --pink: #e91e8c;
+    --orange: #f0ad4e;
+    --gray-border: #ddd;
+    --text: #333;
+    --nav-dark: #3a3a3a;
+  }
+
+  html, body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f0f0f0; color: var(--text); min-height: 100vh; }
+  .page { background: #fff; min-width: 960px; max-width: 1400px; margin: 0 auto; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+
+  /* TOP NAV */
+  .top-nav { display: flex; align-items: stretch; justify-content: space-between; padding: 0 18px; background: #fff; border-bottom: 2px solid var(--gray-border); min-height: 62px; }
+  .logo { display: flex; align-items: center; gap: 6px; text-decoration: none; padding: 8px 0; flex-shrink: 0; }
+  .logo-icon { width: 38px; height: 38px; }
+  .logo-brand { font-size: 22px; font-weight: 900; color: var(--green); letter-spacing: 1.5px; }
+  .logo-tagline { font-size: 9px; color: #aaa; letter-spacing: 0.5px; display: block; }
+  .top-right { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
+  .top-links { display: flex; gap: 8px; font-size: 10px; color: #555; }
+  .top-links a { color: #555; text-decoration: none; }
+  .top-links a:hover { color: var(--green); }
+  .search-wrap { display: flex; border: 1px solid #ccc; border-radius: 3px; overflow: hidden; }
+  .search-wrap input { padding: 5px 10px; border: none; outline: none; font-size: 12px; width: 170px; }
+  .search-wrap button { background: var(--green); border: none; padding: 5px 12px; cursor: pointer; color: #fff; font-size: 15px; }
+
+  /* MAIN NAV — sits inside top-nav */
+  .main-nav { display: flex; align-items: stretch; }
+  .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 18px; cursor: pointer; color: #999; font-size: 10px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; border-bottom: 3px solid transparent; gap: 4px; text-decoration: none; margin-bottom: -2px; }
+  .nav-item.active { color: var(--green); border-bottom-color: var(--green); }
+  .nav-icon-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #e0e0e0; }
+  .nav-item.active .nav-icon-circle { background: var(--green); }
+  .nav-icon-circle svg { width: 14px; height: 14px; fill: #fff; }
+  .nav-icon-circle.gray svg { fill: #bbb; }
+
+  /* SUB NAV */
+  .sub-nav { display: flex; background: var(--nav-dark); }
+  .sub-item { display: flex; align-items: center; gap: 10px; padding: 10px 36px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; cursor: pointer; color: #ccc; border-bottom: 3px solid transparent; user-select: none; }
+  .sub-item:hover { color: #fff; }
+  .sub-item.active { color: #fff; border-bottom-color: var(--green); }
+  .sub-badge { width: 21px; height: 21px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; background: #555; color: #ccc; flex-shrink: 0; }
+  .sub-item.active .sub-badge { background: var(--green); color: #fff; }
+
+  /* MAIN LAYOUT */
+  .main-layout { display: flex; }
+  .left-gutter { width: 205px; min-width: 205px; flex-shrink: 0; background: #fff; border-right: 1px solid #e0e0e0; }
+  .centre-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .table-wrap { overflow-x: auto; border-right: 2px solid #ccc; }
+
+  /* QUOTE HEADER */
+  .quote-header { background: var(--green-dark); color: #fff; display: flex; justify-content: space-between; align-items: center; padding: 9px 16px; font-size: 13px; font-weight: 700; }
+  .quote-header .side { display: flex; align-items: center; gap: 8px; }
+  .quote-header svg { width: 16px; height: 16px; fill: #fff; flex-shrink: 0; }
+
+  /* TOOLBAR */
+  .toolbar { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--gray-border); background: #fff; flex-wrap: wrap; }
+  .toolbar-label { font-weight: 700; font-size: 12px; color: #444; margin-right: 2px; }
+  .status-dots { display: flex; gap: 5px; margin-right: 4px; }
+  .sdot { width: 19px; height: 19px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 900; color: #fff; }
+  .sdot-green { background: var(--green-dark); }
+  .sdot-orange { background: var(--orange); }
+  .tb-btn { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid #ccc; border-radius: 3px; background: #fff; font-size: 11px; cursor: pointer; color: #555; white-space: nowrap; font-family: Arial, Helvetica, sans-serif; }
+  .tb-btn:hover { background: #f5f5f5; }
+  .tb-btn.icon-only { padding: 4px 9px; }
+  .tb-btn.red-icon { color: #c00; }
+  .tb-sep { flex: 1; }
+  .view-btn { padding: 4px 8px; font-size: 11px; color: #999; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .view-btn.active { color: var(--green); }
+  .tb-select { padding: 4px 8px; border: 1px solid #ccc; border-radius: 3px; font-size: 11px; color: #555; outline: none; font-family: Arial, Helvetica, sans-serif; }
+
+  /* COLOUR BAR */
+  .color-bar { height: 4px; display: flex; }
+  .cb { flex: 1; }
+
+  /* TABLE */
+  table { border-collapse: collapse; width: 100%; font-size: 12px; }
+  th, td { border: 1px solid #e0e0e0; }
+  .col-left { min-width: 205px; width: 205px; }
+  .col-sup { min-width: 94px; width: 94px; }
+  .sel-header { padding: 10px 12px; background: #fff; vertical-align: bottom; }
+  .sel-count { color: var(--green-dark); font-size: 15px; font-weight: 700; }
+  .sel-meta { display: flex; gap: 18px; margin-top: 5px; font-size: 11px; color: #888; }
+  .sup-th { text-align: center; padding: 7px 4px; background: #fff; vertical-align: middle; }
+  .sup-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 4px; border: 2px solid; }
+  .sup-circle svg { width: 11px; height: 11px; }
+  .s2-color { border-color: var(--blue); }    .s2-color svg { fill: var(--blue); }
+  .s1-color { border-color: var(--purple); }  .s1-color svg { fill: var(--purple); }
+  .s3-color { border-color: var(--pink); }    .s3-color svg { fill: var(--pink); }
+  .s4-color { border-color: var(--green-dark); } .s4-color svg { fill: var(--green-dark); }
+  .s5-color { border-color: var(--orange); }  .s5-color svg { fill: var(--orange); }
+  .sn-color  { border-color: #bbb; }          .sn-color svg { fill: #bbb; }
+  .sup-label { font-size: 10px; color: #666; }
+  .part-cell { padding: 9px 10px; background: #fff; vertical-align: top; }
+  .part-check-row { display: flex; align-items: flex-start; gap: 8px; }
+  .part-check-row input[type=checkbox] { margin-top: 2px; cursor: pointer; width: 13px; height: 13px; accent-color: var(--green-dark); flex-shrink: 0; }
+  .part-name { font-weight: 700; color: #222; font-size: 12px; }
+  .part-meta { font-size: 11px; color: #666; margin-top: 2px; }
+  .price-cell { text-align: center; padding: 9px 6px 22px; background: #fff; vertical-align: top; cursor: pointer; position: relative; }
+  .price-cell:hover { background: #eaf4ff; }
+  .price-amt { display: block; font-size: 13px; font-weight: 700; color: #222; }
+  .price-type { display: block; font-size: 10px; font-weight: 700; margin-top: 1px; }
+  .oem { color: var(--blue); }
+  .afm { color: var(--purple); }
+  .empty-cell { background: #f9f9f9; }
+  .etd-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-top: 3px; }
+  .etd-label { font-size: 7px; font-weight: 700; opacity: 0.7; margin-right: 2px; }
+  .modify-btn { display: none; position: absolute; bottom: 0; left: 0; right: 0; background: var(--green-dark); color: #fff; border: none; padding: 2px 4px; font-size: 9px; font-weight: 700; cursor: pointer; width: 100%; letter-spacing: 0.3px; font-family: Arial, Helvetica, sans-serif; align-items: center; justify-content: center; gap: 3px; line-height: 1.6; }
+  .price-cell.chosen .modify-btn { display: flex; }
+  .modify-btn:hover { background: #4cae4c; }
+  .totals-row td { background: #f0f0f0; padding: 8px 10px; font-weight: 700; font-size: 12px; border-top: 2px solid #ccc !important; }
+  .totals-label { text-align: left; color: #333; }
+  .totals-val { text-align: center; }
+  tr.row-selected .price-cell.chosen { outline: 2px solid var(--green-dark); outline-offset: -2px; }
+
+  /* SIDEBAR */
+  .sidebar { width: 205px; min-width: 205px; flex-shrink: 0; background: #fff; padding: 14px 14px 0; }
+  .metric { margin-bottom: 12px; }
+  .metric-label { font-size: 11px; color: #555; font-weight: 700; margin-bottom: 2px; }
+  .metric-value { font-size: 24px; font-weight: 700; color: var(--green-dark); line-height: 1; }
+  .metric-pct { font-size: 11px; color: var(--green-dark); margin-left: 4px; }
+  .metric-sub { font-size: 11px; color: #777; margin-top: 2px; }
+  .metric-row { display: flex; align-items: baseline; gap: 4px; }
+  .divider { border-top: 1px solid #eee; margin: 10px 0; }
+  .sidebar-btn { display: block; width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 3px; background: #fff; font-size: 11px; font-weight: 700; text-transform: uppercase; cursor: pointer; margin-bottom: 8px; color: #555; letter-spacing: 0.4px; font-family: Arial, Helvetica, sans-serif; text-align: center; }
+  .sidebar-btn:hover { background: #f5f5f5; }
+  .sidebar-save { background: var(--green-btn); color: #fff; border-color: var(--green-btn); }
+  .sidebar-save:hover { background: #4cae4c; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- TOP NAV with main nav inline -->
+  <div class="top-nav">
+    <div style="width:205px;min-width:205px;flex-shrink:0"></div>
+    <a class="logo" href="#">
+      <svg style="height:50px;width:auto" viewBox="50 195 480 100" xmlns="http://www.w3.org/2000/svg">
+        <style>.st0{fill:#57A84C}.st1{fill:#85C776}.st2{fill:#0DB14B}.st3{fill:#595A5C}</style>
+        <polygon class="st0" points="111.5,263.3 102,258 102,258 55.7,253.8 50.4,263.3 111.5,263.3"/>
+        <polygon class="st1" points="55.7,253.8 59.9,207.5 50.4,202.2 50.4,202.2 50.4,263.3 50.4,263.3 55.7,253.8"/>
+        <path class="st2" d="M62.1,225.8c1.3-1.3,2.6-2.5,4.1-3.9c4.7,3.3,9.4,6.6,14.3,10.1c0.5-0.7,1.1-1.3,1.6-2c8.3-10.6,17.7-20.2,28.5-28.4c2.7-2,5.3-2.1,8.7-1.8c-16,15.5-27.4,33.9-38.6,52.5C74.5,243.6,68.4,234.9,62.1,225.8z"/>
+        <path class="st0" d="M59.9,207.5l34.5,3.1c3.1-3,6.2-5.8,9.4-8.5H50.4L59.9,207.5L59.9,207.5z"/>
+        <path class="st1" d="M105.3,221.6L102,258l9.5,5.3v-49.5C109.4,216.3,107.3,218.9,105.3,221.6z"/>
+        <g><path class="st3" d="M149.7,247.6h-8.3v14.7h-10.9v-48.5h19.8c11.8,0,16.2,4.7,16.2,13.8v6.3C166.5,243,161.5,247.6,149.7,247.6zM155.5,228.5c0-3.5-1.2-5.1-5.8-5.1h-8.3v14.6h8.3c4.8,0,5.8-1.8,5.8-5.3V228.5z"/><path class="st3" d="M210.4,262.3H199l-2.6-9.5h-16.3l-2.6,9.5h-11.4l14.8-48.5h14.6L210.4,262.3z M182.6,243.7h11.1l-5.5-20.3L182.6,243.7z"/><path class="st3" d="M232.8,247.2h-6.4v15.1h-10.9v-48.5h20.2c11.8,0,16.2,4.7,16.2,13.8v6c0,6-2.2,10.1-7.1,12.2l11.7,16.6h-13L232.8,247.2z M240.9,228.5c0-3.6-1.4-5.1-5.8-5.1h-8.7v14.3h8.7c4.7,0,5.8-1.7,5.8-5.3V228.5z"/><path class="st3" d="M281.3,223.4v38.8h-10.9v-38.8h-13v-9.7h37v9.7H281.3z"/><path class="st3" d="M313.9,263c-5.6,0-11.5-1.2-15.7-3.1l1.8-8.5c4.4,1.4,9,2.3,14,2.3c5.6,0,6.7-1.1,6.7-5.2c0-4.4-0.2-4.9-8.2-6.6c-11.7-2.6-13.5-4.9-13.5-15.4c0-9.7,3.4-13.6,16.8-13.6c4.2,0,9.3,0.4,14.7,1.6l-1.1,9.2c-5.5-0.9-9.1-1.4-13.5-1.4c-4.9,0-6,0.9-6,4.4c0,4.7,0.2,4.7,7.9,6.6c13.1,3.1,13.8,5.7,13.8,15.2C331.7,258.3,328.6,263,313.9,263z"/><path class="st2" d="M348.2,246.4c0,4.2,1.4,6.7,6.8,6.7c3.5,0,8.3-0.4,12.5-1.2l1.5,9.5c-4.8,1-9.2,1.5-14.1,1.5c-12.2,0-17.7-6-17.7-14.9v-20.3c0-8.8,5.5-14.9,17.7-14.9c4.9,0,9.3,0.5,14.1,1.5l-1.5,9.5c-4.2-0.7-9-1.2-12.5-1.2c-5.4,0-6.8,2.5-6.8,6.7V246.4z"/><path class="st2" d="M401.4,262.3v-19.5h-15.7v19.5h-10.9v-48.5h10.9v19.3h15.7v-19.3h10.9v48.5H401.4z"/><path class="st2" d="M419.9,262.3v-48.5h30.5v9.7h-19.6v8.9h18.1v9.7h-18.1v10.6h19.6v9.7H419.9z"/><path class="st2" d="M467.1,246.4c0,4.2,1.4,6.7,6.8,6.7c3.5,0,8.3-0.4,12.5-1.2l1.5,9.5c-4.8,1-9.2,1.5-14.1,1.5c-12.2,0-17.7-6-17.7-14.9v-20.3c0-8.8,5.5-14.9,17.7-14.9c4.9,0,9.3,0.5,14.1,1.5l-1.5,9.5c-4.2-0.7-9-1.2-12.5-1.2c-5.4,0-6.8,2.5-6.8,6.7V246.4z"/><path class="st2" d="M493.8,213.8h10.9v48.5h-10.9V213.8z M506.1,237.5l13.1-23.8h12.3l-13.6,23.8l14.6,24.8h-12.3L506.1,237.5z"/></g>
+        <g><path class="st3" d="M134.4,287.4c-1.5,0-3.4-0.3-4.9-0.8l0.3-1.2c1.6,0.5,3.2,0.7,4.7,0.7c3,0,3.8-0.9,3.8-3.1c0-2.7,0-3-3.9-3.9c-4.2-1-4.7-1.7-4.7-5.2c0-2.8,1-4.3,5.4-4.3c1.5,0,3.3,0.3,4.5,0.6l-0.2,1.3c-1.3-0.3-2.9-0.5-4.2-0.5c-3.4,0-3.9,0.8-3.9,3c0,2.8,0.1,2.9,3.7,3.9c4.6,1.1,4.8,1.8,4.8,5.1C139.7,285.7,138.8,287.4,134.4,287.4z"/><path class="st3" d="M256.7,287.2v-17.9l1.5-0.2v18.1H256.7z"/><path class="st3" d="M274.2,284.9h1.6v2.2h-1.6V284.9z"/><path class="st3" d="M360.3,287.2v-17.9l1.5-0.2v18.1H360.3z"/><path class="st3" d="M365.8,272.1v-2.8h1.5v2.8H365.8z M365.8,287.2v-12.7h1.5v12.7H365.8z"/><path class="st3" d="M409.1,284.9h1.6v2.2h-1.6V284.9z"/></g>
+      </svg>
+    </a>
+
+    <nav class="main-nav">
+      <a class="nav-item" href="#"><div class="nav-icon-circle gray"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></div>DASHBOARD</a>
+      <a class="nav-item" href="#"><div class="nav-icon-circle gray"><svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg></div>GET PRICE</a>
+      <a class="nav-item active" href="#"><div class="nav-icon-circle"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>CHECK PRICE</a>
+      <a class="nav-item" href="#"><div class="nav-icon-circle gray"><svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>ORDERS</a>
+      <a class="nav-item" href="#"><div class="nav-icon-circle gray"><svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg></div>CREDITS</a>
+    </nav>
+
+    <div class="top-right">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+        <div class="top-links">
+          <span>⚙</span><a href="#">MY PARTSCHECK ▾</a><span>|</span><a href="#">LOGOUT</a>
+        </div>
+        <div class="search-wrap">
+          <input type="text" placeholder="Search"/>
+          <button>&#128269;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUB NAV — full width dark bar, tabs offset by gutter -->
+  <div class="sub-nav">
+    <div style="width:205px;min-width:205px;flex-shrink:0"></div>
+    <div class="sub-item active" onclick="setTab(this)"><div class="sub-badge">$</div>PRICE</div>
+    <div class="sub-item" onclick="setTab(this)"><div class="sub-badge" style="font-style:italic">i</div>INFO</div>
+    <div class="sub-item" onclick="setTab(this)"><div class="sub-badge" style="font-size:10px">&#9636;</div>DOCUMENTS</div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- Left gutter — blank, matches sidebar width -->
+    <div class="left-gutter"></div>
+
+    <!-- Centre column: quote header + toolbar + table -->
+    <div class="centre-col">
+
+      <div class="quote-header">
+        <div class="side">
+          <svg viewBox="0 0 24 24"><path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6h-6zm4 8h-4l-1-2H7V6h5l1 2h5v6z"/></svg>
+          QUOTE: 42376
+        </div>
+        <div class="side">
+          <svg viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+          Toyota Model, 2017. ABC123
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <span class="toolbar-label">SUPPLIER RESPONSES</span>
+        <div class="status-dots">
+          <span class="sdot sdot-green">✓</span>
+          <span class="sdot sdot-green">✓</span>
+          <span class="sdot sdot-orange">✓</span>
+          <span class="sdot sdot-green">✓</span>
+          <span class="sdot sdot-orange">✓</span>
+        </div>
+        <button class="tb-btn" onclick="alert('Export No Parts Info')">&#10140; Export No Parts Info</button>
+        <button class="tb-btn red-icon" onclick="alert('Print Available Prices')">&#128438; Print Available Prices</button>
+        <button class="tb-btn red-icon" onclick="alert('List Price Report')">&#128438; List Price Report</button>
+        <span class="tb-sep"></span>
+        <button class="tb-btn icon-only">&#128065;</button>
+        <button class="tb-btn">&#9881; Allianz</button>
+        <select class="tb-select"><option>Quick Selection</option><option>Cheapest OEM</option><option>Cheapest All</option></select>
+        <span class="view-btn active" id="vbGrid" onclick="setView('grid')">&#9638;&#9638; Grid View</span>
+        <span class="view-btn" id="vbList" onclick="setView('list')">&#9776; List View</span>
+      </div>
+
+      <div class="color-bar">
+        <div class="cb" style="background:var(--blue)"></div>
+        <div class="cb" style="background:var(--purple)"></div>
+        <div class="cb" style="background:var(--pink)"></div>
+        <div class="cb" style="background:var(--green-dark)"></div>
+        <div class="cb" style="background:var(--orange)"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="partsTable">
+          <thead>
+            <tr>
+              <th class="col-left sel-header">
+                <div><span class="sel-count" id="selCount">0/3</span><span class="sel-count"> Selected</span></div>
+                <div class="sel-meta"><span>Qty</span><span>Part Number &amp; Description</span></div>
+              </th>
+              <th class="col-sup sup-th"><div class="sup-circle s2-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">s2</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle s1-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">s1</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle s3-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">s3</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle s4-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">s4</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle s5-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">s5</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle sn-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">No Supplier</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle sn-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">No Supplier</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle sn-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">No Supplier</div></th>
+              <th class="col-sup sup-th"><div class="sup-circle sn-color"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div><div class="sup-label">No Supplier</div></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-row="0">
+              <td class="part-cell col-left"><div class="part-check-row"><input type="checkbox" onchange="toggleRow(this,0)"/><div><div class="part-name">Boot Lid Emblem</div><div class="part-meta">Dealer #: 4971408</div><div class="part-meta">List: $29.56 ea</div></div></div></td>
+              <td class="price-cell" onclick="selectPrice(this,0)" data-price="21.76"><span class="price-amt">$21.76</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#dcfce7;color:#15803d"><span class="etd-label">ETD</span>Same Day</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,0)" data-price="96.43"><span class="price-amt">$96.43</span><span class="price-type afm">AfM</span><span class="etd-badge" style="background:#dbeafe;color:#1d4ed8"><span class="etd-label">ETD</span>1-2 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="empty-cell col-sup"></td>
+              <td class="price-cell" onclick="selectPrice(this,0)" data-price="15.00"><span class="price-amt">$15.00</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#fef3c7;color:#92400e"><span class="etd-label">ETD</span>3-5 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td>
+            </tr>
+            <tr data-row="1">
+              <td class="part-cell col-left"><div class="part-check-row"><input type="checkbox" onchange="toggleRow(this,1)"/><div><div class="part-name">Boot Lid Badge (edit make)</div><div class="part-meta">Dealer #: 8121480</div><div class="part-meta">List: $893.18 ea</div></div></div></td>
+              <td class="price-cell" onclick="selectPrice(this,1)" data-price="634.63"><span class="price-amt">$634.63</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#ccfbf1;color:#0f766e"><span class="etd-label">ETD</span>2-3 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,1)" data-price="1.86"><span class="price-amt">$1.86</span><span class="price-type afm">AfM</span><span class="etd-badge" style="background:#f1f5f9;color:#64748b"><span class="etd-label">ETD</span>1 Week+</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="empty-cell col-sup"></td>
+              <td class="price-cell" onclick="selectPrice(this,1)" data-price="250.00"><span class="price-amt">$250.00</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#dcfce7;color:#15803d"><span class="etd-label">ETD</span>Same Day</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td>
+            </tr>
+            <tr data-row="2">
+              <td class="part-cell col-left"><div class="part-check-row"><input type="checkbox" onchange="toggleRow(this,2)"/><div><div class="part-name">Boot Lid Badge (edit model)</div><div class="part-meta">Dealer #: 2714717</div><div class="part-meta">List: $506.38 ea</div></div></div></td>
+              <td class="price-cell" onclick="selectPrice(this,2)" data-price="463.94"><span class="price-amt">$463.94</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#dbeafe;color:#1d4ed8"><span class="etd-label">ETD</span>1-2 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,2)" data-price="571.47"><span class="price-amt">$571.47</span><span class="price-type afm">AfM</span><span class="etd-badge" style="background:#ccfbf1;color:#0f766e"><span class="etd-label">ETD</span>2-3 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="empty-cell col-sup"></td>
+              <td class="price-cell" onclick="selectPrice(this,2)" data-price="100.00"><span class="price-amt">$100.00</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#fef3c7;color:#92400e"><span class="etd-label">ETD</span>3-5 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td>
+            </tr>
+            <tr class="totals-row">
+              <td class="totals-label col-left">Supplier Total (ex GST):</td>
+              <td class="totals-val">$ 1,120.33</td>
+              <td class="totals-val">$ 669.76</td>
+              <td class="totals-val">$ 0.00</td>
+              <td class="totals-val">$ 365.00</td>
+              <td class="totals-val">$ 0.00</td>
+              <td></td><td></td><td></td><td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /centre-col -->
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="metric">
+        <div class="metric-label">Dealer Profit</div>
+        <div class="metric-row"><span class="metric-value" id="dealerProfit">$0.00</span><span class="metric-pct" id="dealerPct">(0.00%)</span></div>
+        <div class="metric-sub">Sell Price $0.00</div>
+      </div>
+      <div class="divider"></div>
+      <div class="metric">
+        <div class="metric-label">Selected Profit</div>
+        <div class="metric-row"><span class="metric-value" id="selProfit">$0.00</span><span class="metric-pct" id="selPct">(0.00%)</span></div>
+        <div class="metric-sub" id="selSell">Sell Price $0.00</div>
+      </div>
+      <div class="divider"></div>
+      <div class="metric">
+        <div class="metric-label">Job Saving</div>
+        <span class="metric-value" id="jobSaving">$0.00</span>
+      </div>
+      <div class="divider"></div>
+      <button class="sidebar-btn" onclick="clearSelection()">CLEAR SELECTION</button>
+      <button class="sidebar-btn" onclick="if(confirm('Cancel this request?')) alert('Request cancelled.')">CANCEL REQUEST</button>
+      <button class="sidebar-btn sidebar-save" onclick="saveQuote()">SAVE</button>
+    </div>
+
+  </div><!-- /main-layout -->
+</div><!-- /page -->
+
+<script>
+  const state = { selected:[false,false,false], chosenPrice:[null,null,null], chosenCell:[null,null,null] };
+
+  function setTab(el) { document.querySelectorAll('.sub-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); }
+  function setView(v) { document.getElementById('vbGrid').classList.toggle('active',v==='grid'); document.getElementById('vbList').classList.toggle('active',v==='list'); }
+
+  function selectPrice(cell, idx) {
+    const row = document.querySelector(`tr[data-row="${idx}"]`);
+    const cb = row.querySelector('input[type=checkbox]');
+    if (state.chosenCell[idx]) state.chosenCell[idx].classList.remove('chosen');
+    if (state.chosenCell[idx] === cell) {
+      state.chosenCell[idx]=null; state.chosenPrice[idx]=null;
+      if (!state.selected[idx]) row.classList.remove('row-selected');
+      cb.checked=state.selected[idx];
+    } else {
+      cell.classList.add('chosen'); state.chosenCell[idx]=cell; state.chosenPrice[idx]=parseFloat(cell.dataset.price);
+      row.classList.add('row-selected'); cb.checked=true; state.selected[idx]=true;
+    }
+    recalc();
+  }
+
+  function toggleRow(cb, idx) {
+    const row=document.querySelector(`tr[data-row="${idx}"]`); state.selected[idx]=cb.checked;
+    if (!cb.checked) { row.classList.remove('row-selected'); if(state.chosenCell[idx]) state.chosenCell[idx].classList.remove('chosen'); state.chosenCell[idx]=null; state.chosenPrice[idx]=null; }
+    else row.classList.add('row-selected');
+    recalc();
+  }
+
+  function recalc() {
+    document.getElementById('selCount').textContent=`${state.selected.filter(Boolean).length}/3`;
+    const total=state.chosenPrice.reduce((s,p)=>s+(p||0),0);
+    const fmt=v=>'$'+v.toFixed(2);
+    document.getElementById('selSell').textContent=`Sell Price ${fmt(total)}`;
+    ['selProfit','dealerProfit'].forEach(id=>document.getElementById(id).textContent=fmt(0));
+    ['selPct','dealerPct'].forEach(id=>document.getElementById(id).textContent='(0.00%)');
+    document.getElementById('jobSaving').textContent=fmt(0);
+  }
+
+  function clearSelection() {
+    state.selected=[false,false,false]; state.chosenPrice=[null,null,null];
+    state.chosenCell.forEach(c=>c&&c.classList.remove('chosen')); state.chosenCell=[null,null,null];
+    document.querySelectorAll('tr[data-row]').forEach(r=>r.classList.remove('row-selected'));
+    document.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+    recalc();
+  }
+
+  function saveQuote() {
+    const n=state.selected.filter(Boolean).length;
+    alert(n>0?`Quote saved with ${n} item(s) selected.`:'No items selected. Please select at least one price before saving.');
+  }
+</script>
+</body>
+</html>
