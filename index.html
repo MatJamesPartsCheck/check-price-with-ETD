@@ -4,6 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PartsCheck – Check Price</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -110,10 +111,11 @@
   .part-meta { font-size: 11px; color: #666; margin-top: 2px; }
   .price-cell { text-align: center; padding: 9px 6px 22px; background: #fff; vertical-align: top; cursor: pointer; position: relative; }
   .price-cell:hover { background: #eaf4ff; }
-  .price-amt { display: block; font-size: 13px; font-weight: 700; color: #222; }
-  .price-type { display: block; font-size: 10px; font-weight: 700; margin-top: 1px; }
+  .price-type { display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 10px; font-weight: 700; margin-bottom: 3px; }
+  .price-amt { display: block; font-size: 16px; font-weight: 900; color: #222; }
   .oem { color: var(--blue); }
   .afm { color: var(--purple); }
+  .msg-icon { width: 11px; height: 11px; flex-shrink: 0; }
   .empty-cell { background: #f9f9f9; }
   .etd-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; margin-top: 3px; }
   .etd-label { font-size: 7px; font-weight: 700; opacity: 0.7; margin-right: 2px; }
@@ -266,26 +268,26 @@
           <tbody>
             <tr data-row="0">
               <td class="part-cell col-left"><div class="part-check-row"><input type="checkbox" onchange="toggleRow(this,0)"/><div><div class="part-name">Boot Lid Emblem</div><div class="part-meta">Dealer #: 4971408</div><div class="part-meta">List: $29.56 ea</div></div></div></td>
-              <td class="price-cell" onclick="selectPrice(this,0)" data-price="21.76"><span class="price-amt">$21.76</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#dcfce7;color:#15803d"><span class="etd-label">ETD</span>Same Day</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
-              <td class="price-cell" onclick="selectPrice(this,0)" data-price="96.43"><span class="price-amt">$96.43</span><span class="price-type afm">AfM</span><span class="etd-badge" style="background:#dbeafe;color:#1d4ed8"><span class="etd-label">ETD</span>1-2 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,0)" data-price="21.76"><span class="price-type oem">OEM <i class="fa fa-commenting-o" style="color:#337ab7;font-size:9px"></i></span><span class="price-amt">$21.76</span><span class="etd-badge" style="background:#dcfce7;color:#15803d"><span class="etd-label">ETD</span>Same Day</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,0)" data-price="96.43"><span class="price-type afm">AfM</span><span class="price-amt">$96.43</span><span class="etd-badge" style="background:#dbeafe;color:#1d4ed8"><span class="etd-label">ETD</span>1-2 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
               <td class="empty-cell col-sup"></td>
-              <td class="price-cell" onclick="selectPrice(this,0)" data-price="15.00"><span class="price-amt">$15.00</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#fef3c7;color:#92400e"><span class="etd-label">ETD</span>3-5 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,0)" data-price="15.00"><span class="price-type oem">OEM</span><span class="price-amt">$15.00</span><span class="etd-badge" style="background:#fef3c7;color:#92400e"><span class="etd-label">ETD</span>3-5 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
               <td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td>
             </tr>
             <tr data-row="1">
               <td class="part-cell col-left"><div class="part-check-row"><input type="checkbox" onchange="toggleRow(this,1)"/><div><div class="part-name">Boot Lid Badge (edit make)</div><div class="part-meta">Dealer #: 8121480</div><div class="part-meta">List: $893.18 ea</div></div></div></td>
-              <td class="price-cell" onclick="selectPrice(this,1)" data-price="634.63"><span class="price-amt">$634.63</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#ccfbf1;color:#0f766e"><span class="etd-label">ETD</span>2-3 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
-              <td class="price-cell" onclick="selectPrice(this,1)" data-price="1.86"><span class="price-amt">$1.86</span><span class="price-type afm">AfM</span><span class="etd-badge" style="background:#f1f5f9;color:#64748b"><span class="etd-label">ETD</span>1 Week+</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,1)" data-price="634.63"><span class="price-type oem">OEM</span><span class="price-amt">$634.63</span><span class="etd-badge" style="background:#ccfbf1;color:#0f766e"><span class="etd-label">ETD</span>2-3 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,1)" data-price="1.86"><span class="price-type afm">AfM <i class="fa fa-commenting-o" style="color:#9b59b6;font-size:9px"></i></span><span class="price-amt">$1.86</span><span class="etd-badge" style="background:#f1f5f9;color:#64748b"><span class="etd-label">ETD</span>1 Week+</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
               <td class="empty-cell col-sup"></td>
-              <td class="price-cell" onclick="selectPrice(this,1)" data-price="250.00"><span class="price-amt">$250.00</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#dcfce7;color:#15803d"><span class="etd-label">ETD</span>Same Day</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,1)" data-price="250.00"><span class="price-type oem">OEM <i class="fa fa-commenting-o" style="color:#5cb85c;font-size:9px"></i></span><span class="price-amt">$250.00</span><span class="etd-badge" style="background:#dcfce7;color:#15803d"><span class="etd-label">ETD</span>Same Day</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
               <td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td>
             </tr>
             <tr data-row="2">
               <td class="part-cell col-left"><div class="part-check-row"><input type="checkbox" onchange="toggleRow(this,2)"/><div><div class="part-name">Boot Lid Badge (edit model)</div><div class="part-meta">Dealer #: 2714717</div><div class="part-meta">List: $506.38 ea</div></div></div></td>
-              <td class="price-cell" onclick="selectPrice(this,2)" data-price="463.94"><span class="price-amt">$463.94</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#dbeafe;color:#1d4ed8"><span class="etd-label">ETD</span>1-2 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
-              <td class="price-cell" onclick="selectPrice(this,2)" data-price="571.47"><span class="price-amt">$571.47</span><span class="price-type afm">AfM</span><span class="etd-badge" style="background:#ccfbf1;color:#0f766e"><span class="etd-label">ETD</span>2-3 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,2)" data-price="463.94"><span class="price-type oem">OEM <i class="fa fa-commenting-o" style="color:#337ab7;font-size:9px"></i></span><span class="price-amt">$463.94</span><span class="etd-badge" style="background:#dbeafe;color:#1d4ed8"><span class="etd-label">ETD</span>1-2 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,2)" data-price="571.47"><span class="price-type afm">AfM</span><span class="price-amt">$571.47</span><span class="etd-badge" style="background:#ccfbf1;color:#0f766e"><span class="etd-label">ETD</span>2-3 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
               <td class="empty-cell col-sup"></td>
-              <td class="price-cell" onclick="selectPrice(this,2)" data-price="100.00"><span class="price-amt">$100.00</span><span class="price-type oem">OEM</span><span class="etd-badge" style="background:#fef3c7;color:#92400e"><span class="etd-label">ETD</span>3-5 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
+              <td class="price-cell" onclick="selectPrice(this,2)" data-price="100.00"><span class="price-type oem">OEM</span><span class="price-amt">$100.00</span><span class="etd-badge" style="background:#fef3c7;color:#92400e"><span class="etd-label">ETD</span>3-5 Days</span><button class="modify-btn" onclick="event.stopPropagation();alert('Modify')">&#9998; MODIFY</button></td>
               <td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td><td class="empty-cell col-sup"></td>
             </tr>
             <tr class="totals-row">
